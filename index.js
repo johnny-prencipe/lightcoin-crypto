@@ -1,55 +1,56 @@
-let balance = 500.00;
-
 class Transaction {
-
   constructor(amount, account) {
     this.amount = amount;
     this.account = account;
   }
-
   commit() {
-    this.time = new Date();
-    this.account.addTransaction(this);
-  }
+    if (this.canWithdraw()){
+      this.time = new Date();
+      this.account.addTransaction(this);
 
+    }
+  }
 }
 
 class Account {
-
   constructor(username) {
     this.username = username;
     this.transactions = [];
   }
-
   addTransaction(transaction) {
     this.transactions.push(transaction);
   }
-
   get balance() {
-    let counter = 0
-    this.transactions.forEach(transaction => {
-      counter += transaction.value;
-    });
+    let counter = 0;
+    for (let i = 0; i < this.transactions.length; i++) {
+      counter += this.transactions[i].value;
+    }
     return counter;
   }
-
-
 }
 
-class Withdrawal extends Transaction {
 
+class Withdrawal extends Transaction {
   get value() {
     return -this.amount;
   }
-
+  canWithdraw() {
+    if (this.account.balance - this.amount >= 0) {
+      return true;
+    }
+    return false;
+  }
 }
 
 class Deposit extends Transaction {
 
+  canWithdraw() {
+    return true;
+  }
+
   get value() {
     return this.amount;
   }
-
 }
 
 
@@ -66,7 +67,7 @@ t1 = new Withdrawal(50.25, myAccount);
 t1.commit();
 console.log('Transaction 1:', t1);
 
-t2 = new Withdrawal(9.99, myAccount);
+t2 = new Withdrawal(9999999, myAccount);
 t2.commit();
 console.log('Transaction 2:', t2);
 
